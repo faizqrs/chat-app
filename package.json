@@ -1,0 +1,33 @@
+{
+  "name": "chit-chat",
+  "version": "1.0.0",
+  "description": "a chatting app using socket io, also a backend of that project",
+  "keywords": [
+    "fswd",
+    "nodejs",
+    "mongodb",
+    "mongoose",
+    "sha",
+    "bcrypt",
+    "socket",
+    "io",
+    "authentication",
+    "authorization",
+    "JWT"
+  ],
+  "license": "ISC",
+  "author": "faisal qureshi",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "server": "nodemon index"
+  },
+  "dependencies": {
+    "chit-chat": "file:",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.14.2"
+  }
+}
