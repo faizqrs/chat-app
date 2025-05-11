@@ -1,5 +1,6 @@
 const express = require('express');
 const UserModel = require('../models/user');
+const bcrypt = require('bcrypt');
 
 
 
@@ -26,9 +27,11 @@ routes.get('/login', (req, res) => {
 })
 
 // user signup api 
-routes.post('/signup', (req, res) => {
+// async for asynchronous api request
+routes.post('/signup', async (req, res) => {
     // validate user req body (username & password)
     console.log(req.body)
+   
     if(!req.body.name){
         res.send("name cannot be empty");
     }
@@ -37,18 +40,46 @@ routes.post('/signup', (req, res) => {
     } else if (!req.body.password){
         res.send("password cannot be empty");
     } else {
+
+        // check user already exist
+
+        let user = await UserModel.findOne({userName:req.body.userName});
+        if (user){
+            return res.status(400).json("Username Already Exist");
+        }
+ // it will create salt 
+    // number is the salt round in numbers
+    const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
+// now mix password with salt
+    const hash = await bcrypt.hash(req.body.password, salt);
+//    console.log(hash);
+//    res.send(hash)
+        
         // create user if not exists
         const newUser = new UserModel({
             name: req.body.name,
             userName: req.body.userName,
-            password: req.body.password
+            password: hash,
         }) 
         // save user to db
         newUser.save().then(user=>{
             console.log(user);
-            res.send(user);
+            //below line is sending the whole user
+            // res.send(user);
+            //filter
+            res.json({
+                success : true,
+                id : user._id,
+                userName : user.name,
+            })
+            //catch error if any error occur like if same user data sent
+            .catch(err=>{
+                res.send(err)
+            })
         })
+
     }
 })
+
 
 module.exports = routes 
