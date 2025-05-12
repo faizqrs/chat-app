@@ -128,5 +128,36 @@ routes.post('/signup', async (req, res) => {
     }
 })
 
+// API to check all signup users
+routes.get('/', async (req,res) => {
+    // from user api headers
+    let token = req.headers.auth; 
+    //check token is present
+    if(!token){
+        return res.status(400).json("Unauthorized");
+    }
+    // if token is present then validate token 0=>payload, 1=>secret, 2=>expiry
+    // here we are spliting token in 3 parts then we are checking secret of token & jwt scret both are same or not
+    let jwtUser 
+    try{
+    jwtUser= await jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
+    } catch(err){
+        console.log(err);
+        return res.status(400).json("invalid token");
+    }
+    console.log({jwtUser});
+    // check jwt user is a logged in user
+    if(!jwtUser){
+        return res.status(400).json("unauthorized")
+    }
+    // if user is logged in then fetch all users from database
+    let users = await UserModel.aggregate()
+    .project({
+        password:0,
+        date:0,
+        __v:0
+    })
+    res.send(users);
+})
 
 module.exports = routes 
