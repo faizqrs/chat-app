@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ConversationSchema = new schema(
+const ConversationSchema = new Schema(
     {
         recipents:[{
             
@@ -14,7 +14,7 @@ const ConversationSchema = new schema(
             
         },
         date: {
-            type: string,
+            type: String,
             default: Date.now()
         },
     }

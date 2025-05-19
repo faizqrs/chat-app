@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 // Own import for routes
 const users = require('./routes/users');
+const Messages = require('./routes/messages');
 
 
 
@@ -17,7 +18,8 @@ const port = process.env.PORT || 8080;
 const server = app.listen(port, ()=>{
     console.log(`Server is running on port ${port}`);
 })
-
+// import socket.io
+const io = require('socket.io')(server, {cors: {origin: "*"}})
 // database configuration
 mongoose.connect(mongodbURI)
 .then(()=> console.log("Successfully Connected"))
@@ -27,4 +29,9 @@ app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
  
+app.use(function (req, res, next){
+    req.io = io;
+    next();
+})
 app.use("/users", users);
+app.use("/messages", Messages);

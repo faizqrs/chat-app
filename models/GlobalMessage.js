@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const GlobalMessageSchema = new schema(
+const GlobalMessageSchema = new Schema(
     {
         from:{
-            require: true,
+            required: true,
             type: Schema.Types.ObjectId,
             ref: 'users'
         },
@@ -14,8 +14,8 @@ const GlobalMessageSchema = new schema(
             
         },
         date: {
-            type: string,
-            default: Date.now()
+            type: String,
+            default: Date.now
         },
     }
 )

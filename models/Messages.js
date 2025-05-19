@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Conversation = require('./Conversation');
 const Schema = mongoose.Schema;
 
-const MessagesSchema = new schema(
+const MessagesSchema = new Schema(
     {
         Conversation:{  // we are using our conversation schema inside Messages Schema to save last message in chat
             type: Schema.Types.ObjectId,
@@ -20,8 +20,8 @@ const MessagesSchema = new schema(
             
         },
         date: {
-            type: string,
-            default: Date.now()
+            type: String,
+            default: Date.now
         },
     }
 )
