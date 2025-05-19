@@ -24,6 +24,7 @@
     "server": "nodemon index"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "chit-chat": "file:",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
