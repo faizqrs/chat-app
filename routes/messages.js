@@ -1,8 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const GlobalMessage = require('../models/GlobalMessage');
-
-
+const mongoose = require('mongoose');
+const Conversation = require('../models/Conversation');
+const Messages = require('../models/Messages');
 
 const routes = express.Router();
 
@@ -83,6 +84,74 @@ routes.get('/globalmessage', async (req, res) => {
   res.send(messages);
 })
 
+
+// send a personal message  (me and ashvary)
+routes.post('/personal', async (req, res) => {
+    let from = new mongoose.Types.ObjectId(jwtuser.id); // logged in person kush
+    let to = new mongoose.Types.ObjectId(req.body.sender); // person to send a msz
+    let conversation = await Conversation.findOneAndUpdate(
+        {
+            recipents: {
+                $all: [
+                    { $elemMatch: { $eq: from } },
+                    { $elemMatch: { $eq: to } }
+                ]
+            }
+        },
+        {
+            recipents: [from, to],
+            lastMessage: req.body.message
+        },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+    )
+    // upsert: true, If the value is true and no documents match the condition, this option inserts a new document into the collection
+    // new: true,  Creates a new document if no documents match the query
+
+    let message = new Messages({
+        conversation: conversation._id,
+        from: from,
+        to: to,
+        body: req.body.message
+    })
+    
+    let messageData = await message.save();
+    res.send(messageData)
+})
+
+// Get Conversation List api
+routes.get('/ConversationList', async (req,res) => {
+  let from = new mongoose.Types.ObjectId(jwtuser.id);// logged in person
+  let ConversationList = await Conversation.aggregate(
+    [
+      {
+        $lookup:{
+          from:'users',
+          localField:'recipents',
+          foreignField:'_id',
+          as:'recipentsObj'
+        }
+      }
+    ]
+  )
+  .match(
+    {
+      recipents: {
+        $all:[ // match all
+          { $elemMatch: { $eq: from } } // which is equal to from
+        ]
+
+      }
+    }
+  )
+  .project( // hide these things in recipentsObj
+    {
+      'recipentsObj.password':0,
+      'recipentsObj.__v':0,
+      'recipentsObj.date':0
+    }
+  )
+  res.send(ConversationList);
+})
 
 
 

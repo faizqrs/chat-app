@@ -1,30 +1,30 @@
 const mongoose = require('mongoose');
-const Conversation = require('./Conversation');
 const Schema = mongoose.Schema;
 
 const MessagesSchema = new Schema(
     {
-        Conversation:{  // we are using our conversation schema inside Messages Schema to save last message in chat
+        conversation: {
             type: Schema.Types.ObjectId,
-            ref: 'Conversation'
+            ref: 'conversation'
         },
-        from:[{
-            
+        from: {
             type: Schema.Types.ObjectId,
             ref: 'users'
-        }],  //keeping it in an array because recipent can be one or more users
+        },
         to: {
-            
-              type: Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'users'
-            
+        },
+        body: {
+            type: String
         },
         date: {
             type: String,
-            default: Date.now
+            default: Date.now()
         },
     }
 )
 
-const Messages = mongoose.model('Messages', MessagesSchema);
+
+const Messages = mongoose.model('messagess', MessagesSchema);
 module.exports = Messages;
