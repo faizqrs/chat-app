@@ -33,6 +33,9 @@ routes.post('/global', async (req, res) =>{
             body:req.body.message
         }
       )
+      // emiting socket io in api, in this messages is the name which we need to call from frontend it is a event name
+      //  & req.body.message is which user have sent
+      req.io,socket,emit('messages', req.body.message);
       //save message & send response to client
       let response = await message.save();
       res.send(response);
@@ -113,7 +116,9 @@ routes.post('/personal', async (req, res) => {
         to: to,
         body: req.body.message
     })
-    
+     // emiting socket io in api, in this messages is the name which we need to call from frontend it is a event name
+      //  & req.body.message is which user have sent
+      req.io.socket.emit('messages', req.body.message);// emit is a function which is used to send data to connected clients
     let messageData = await message.save();
     res.send(messageData)
 })

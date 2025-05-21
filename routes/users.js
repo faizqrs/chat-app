@@ -91,6 +91,8 @@ routes.post('/signup', async (req, res) => {
             userName: req.body.userName,
             password: hash,
         }) 
+        // socket.io for user registrarion live update in app
+        req.io.socket.emit("users", req.body.userName);
         // save user to db
         newUser.save().then(user=>{
             console.log(user);
