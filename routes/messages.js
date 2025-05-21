@@ -119,6 +119,7 @@ routes.post('/personal', async (req, res) => {
 })
 
 // Get Conversation List api
+//from and every one
 routes.get('/ConversationList', async (req,res) => {
   let from = new mongoose.Types.ObjectId(jwtuser.id);// logged in person
   let ConversationList = await Conversation.aggregate(
@@ -154,6 +155,56 @@ routes.get('/ConversationList', async (req,res) => {
 })
 
 
+// Get Conversation By user api
+// from and to
+routes.get('/ConversationByUser/query', async (req,res) => {
+  let from = new mongoose.Types.ObjectId(jwtuser.id);// logged in person
+  let to = new mongoose.Types.ObjectId(req.query.userId);
+ let MessagesList = await Messages.aggregate(
+    [
+      {
+        $lookup:{
+          from:'users',
+          localField:'from',
+          foreignField:'_id',
+          as:'fromObj'
+        }
+      },
+      {
+        $lookup:{
+          from:'users',
+          localField:'to',
+          foreignField:'_id',
+          as:'toObj'
+        }
+      },
+    ]
+  )
+  .match(
+    {
+       
+        $or:[ // match this or other one
+          { $and: [{ to: to }, {from: from }] }, // match To to From or
+          { $and: [{ to: from }, {from: to }] }, // From to TO
+           
+        ]
 
+      }
+    
+  )
+  
+  .project( // hide these things in recipentsObj
+    {
+      'fromObj.password':0,
+      'fromObj.__v':0,
+      'fromObj.date':0,
+      'toObj.password':0,
+      'toObj.__v':0,
+      'toObj.date':0,
+    }
+  );
+  
+  res.send(MessagesList);
+});
 
 module.exports = routes;
